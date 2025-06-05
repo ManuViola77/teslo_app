@@ -2,6 +2,51 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:formz/formz.dart';
 import 'package:teslo_shop/features/shared/shared.dart';
 
+final loginFormProvider =
+    StateNotifierProvider.autoDispose<LoginFormNotifier, LoginFormState>(
+  (ref) => LoginFormNotifier(),
+);
+
+class LoginFormNotifier extends StateNotifier<LoginFormState> {
+  LoginFormNotifier() : super(LoginFormState());
+
+  onEmailChanged(String value) {
+    final email = Email.dirty(value);
+    state = state.copyWith(
+      email: email,
+      isFormValid: Formz.validate([email, state.password]),
+    );
+  }
+
+  onPasswordChanged(String value) {
+    final password = Password.dirty(value);
+    state = state.copyWith(
+      password: password,
+      isFormValid: Formz.validate([password, state.email]),
+    );
+  }
+
+  onLoginFormSubmit() {
+    _touchEveryField();
+
+    if (!state.isFormValid) return;
+
+    print(state);
+  }
+
+  _touchEveryField() {
+    final email = Email.dirty(state.email.value);
+    final password = Password.dirty(state.password.value);
+
+    state = state.copyWith(
+      isFormPosted: true,
+      isFormValid: Formz.validate([email, password]),
+      email: email,
+      password: password,
+    );
+  }
+}
+
 class LoginFormState {
   final bool isPosting;
   final bool isFormPosted;
@@ -45,48 +90,3 @@ class LoginFormState {
     ''';
   }
 }
-
-class LoginFormNotifier extends StateNotifier<LoginFormState> {
-  LoginFormNotifier() : super(LoginFormState());
-
-  onEmailChanged(String value) {
-    final email = Email.dirty(value);
-    state = state.copyWith(
-      email: email,
-      isFormValid: Formz.validate([email, state.password]),
-    );
-  }
-
-  onPasswordChanged(String value) {
-    final password = Password.dirty(value);
-    state = state.copyWith(
-      password: password,
-      isFormValid: Formz.validate([password, state.email]),
-    );
-  }
-
-  onLoginFormSubmit() {
-    _touchEveryField();
-
-    if (!state.isFormValid) return;
-
-    print(state);
-  }
-
-  _touchEveryField() {
-    final email = Email.dirty(state.email.value);
-    final password = Password.dirty(state.password.value);
-
-    state = state.copyWith(
-      isFormPosted: true,
-      isFormValid: Formz.validate([email, password]),
-      email: email,
-      password: password,
-    );
-  }
-}
-
-final loginFormProvider =
-    StateNotifierProvider.autoDispose<LoginFormNotifier, LoginFormState>(
-  (ref) => LoginFormNotifier(),
-);
