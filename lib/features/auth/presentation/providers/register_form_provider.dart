@@ -22,7 +22,8 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
     state = state.copyWith(
       fullName: fullName,
       isFormValid: Formz.validate(
-          [fullName, state.email, state.password, state.confirmPassword]),
+              [fullName, state.email, state.password, state.confirmPassword]) &&
+          state.isConfirmPasswordValid,
     );
   }
 
@@ -31,25 +32,32 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
     state = state.copyWith(
       email: email,
       isFormValid: Formz.validate(
-          [email, state.fullName, state.password, state.confirmPassword]),
+              [email, state.fullName, state.password, state.confirmPassword]) &&
+          state.isConfirmPasswordValid,
     );
   }
 
   onPasswordChanged(String value) {
     final password = Password.dirty(value, true);
+    final isConfirmPasswordValid = value == state.confirmPassword.value;
     state = state.copyWith(
       password: password,
+      isConfirmPasswordValid: isConfirmPasswordValid,
       isFormValid: Formz.validate(
-          [password, state.email, state.fullName, state.confirmPassword]),
+              [password, state.email, state.fullName, state.confirmPassword]) &&
+          isConfirmPasswordValid,
     );
   }
 
   onConfirmPasswordChanged(String value) {
     final confirmPassword = Password.dirty(value, false);
+    final isConfirmPasswordValid = value == state.password.value;
     state = state.copyWith(
       confirmPassword: confirmPassword,
+      isConfirmPasswordValid: isConfirmPasswordValid,
       isFormValid: Formz.validate(
-          [confirmPassword, state.email, state.fullName, state.password]),
+              [confirmPassword, state.email, state.fullName, state.password]) &&
+          isConfirmPasswordValid,
     );
   }
 
@@ -68,9 +76,14 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
     final password = Password.dirty(state.password.value, true);
     final confirmPassword = Password.dirty(state.confirmPassword.value, false);
 
+    final isConfirmPasswordValid = password.value == confirmPassword.value;
+
     state = state.copyWith(
       isFormPosted: true,
-      isFormValid: Formz.validate([fullName, email, password, confirmPassword]),
+      isFormValid:
+          Formz.validate([fullName, email, password, confirmPassword]) &&
+              isConfirmPasswordValid,
+      isConfirmPasswordValid: isConfirmPasswordValid,
       fullName: fullName,
       email: email,
       password: password,
@@ -83,6 +96,7 @@ class RegisterFormState {
   final bool isPosting;
   final bool isFormPosted;
   final bool isFormValid;
+  final bool isConfirmPasswordValid;
   final FullName fullName;
   final Email email;
   final Password password;
@@ -92,6 +106,7 @@ class RegisterFormState {
     this.isPosting = false,
     this.isFormPosted = false,
     this.isFormValid = false,
+    this.isConfirmPasswordValid = false,
     this.fullName = const FullName.pure(),
     this.email = const Email.pure(),
     this.password = const Password.pure(),
@@ -102,6 +117,7 @@ class RegisterFormState {
     bool? isPosting,
     bool? isFormPosted,
     bool? isFormValid,
+    bool? isConfirmPasswordValid,
     FullName? fullName,
     Email? email,
     Password? password,
@@ -111,6 +127,8 @@ class RegisterFormState {
         isPosting: isPosting ?? this.isPosting,
         isFormPosted: isFormPosted ?? this.isFormPosted,
         isFormValid: isFormValid ?? this.isFormValid,
+        isConfirmPasswordValid:
+            isConfirmPasswordValid ?? this.isConfirmPasswordValid,
         fullName: fullName ?? this.fullName,
         email: email ?? this.email,
         password: password ?? this.password,
@@ -124,6 +142,7 @@ class RegisterFormState {
       isPosting: $isPosting,
       isFormPosted: $isFormPosted,
       isFormValid: $isFormValid,
+      isConfirmPasswordValid: $isConfirmPasswordValid,
       fullName: $fullName,
       email: $email,
       password: $password,

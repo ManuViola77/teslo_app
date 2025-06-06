@@ -70,6 +70,15 @@ class _RegisterForm extends ConsumerWidget {
     final registerForm = ref.watch(registerFormProvider);
     final textStyles = Theme.of(context).textTheme;
 
+    String? confirmPasswordError;
+    if (registerForm.isFormPosted) {
+      if (registerForm.confirmPassword.errorMessage != null) {
+        confirmPasswordError = registerForm.confirmPassword.errorMessage!;
+      } else if (!registerForm.isConfirmPasswordValid) {
+        confirmPasswordError = 'Las contraseñas no coinciden';
+      }
+    }
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -116,9 +125,7 @@ class _RegisterForm extends ConsumerWidget {
               onChanged: (value) => ref
                   .read(registerFormProvider.notifier)
                   .onConfirmPasswordChanged(value),
-              errorMessage: registerForm.isFormPosted
-                  ? registerForm.confirmPassword.errorMessage
-                  : null,
+              errorMessage: confirmPasswordError,
             ),
             const SizedBox(height: 30),
             SizedBox(
