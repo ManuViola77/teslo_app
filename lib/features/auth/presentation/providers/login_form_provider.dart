@@ -26,7 +26,7 @@ class LoginFormNotifier extends StateNotifier<LoginFormState> {
   }
 
   onPasswordChanged(String value) {
-    final password = Password.dirty(value);
+    final password = Password.dirty(value, false);
     state = state.copyWith(
       password: password,
       isFormValid: Formz.validate([password, state.email]),
@@ -43,7 +43,7 @@ class LoginFormNotifier extends StateNotifier<LoginFormState> {
 
   _touchEveryField() {
     final email = Email.dirty(state.email.value);
-    final password = Password.dirty(state.password.value);
+    final password = Password.dirty(state.password.value, false);
 
     state = state.copyWith(
       isFormPosted: true,
@@ -66,7 +66,7 @@ class LoginFormState {
     this.isFormPosted = false,
     this.isFormValid = false,
     this.email = const Email.pure(),
-    this.password = const Password.pure(),
+    this.password = const Password.pure(checkFormat: false),
   });
 
   LoginFormState copyWith({

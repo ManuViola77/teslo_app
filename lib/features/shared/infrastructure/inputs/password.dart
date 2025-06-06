@@ -8,12 +8,13 @@ class Password extends FormzInput<String, PasswordError> {
   static final RegExp passwordRegExp = RegExp(
     r'(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$',
   );
+  final bool checkFormat;
 
   // Call super.pure to represent an unmodified form input.
-  const Password.pure() : super.pure('');
+  const Password.pure({this.checkFormat = true}) : super.pure('');
 
   // Call super.dirty to represent a modified form input.
-  const Password.dirty(String value) : super.dirty(value);
+  const Password.dirty(String value, this.checkFormat) : super.dirty(value);
 
   String? get errorMessage {
     if (isValid || isPure) return null;
@@ -32,7 +33,9 @@ class Password extends FormzInput<String, PasswordError> {
   PasswordError? validator(String value) {
     if (value.isEmpty || value.trim().isEmpty) return PasswordError.empty;
     if (value.length < 6) return PasswordError.length;
-    if (!passwordRegExp.hasMatch(value)) return PasswordError.format;
+    if (checkFormat && !passwordRegExp.hasMatch(value)) {
+      return PasswordError.format;
+    }
 
     return null;
   }

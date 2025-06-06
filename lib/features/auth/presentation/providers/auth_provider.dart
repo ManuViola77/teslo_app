@@ -26,8 +26,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<void> registerUser(String email, String password) async {
-    // TODO
+  Future<void> registerUser(
+      String fullName, String email, String password) async {
+    try {
+      final user = await authRepository.register(fullName, email, password);
+      _setLoggedUser(user);
+    } on CustomError catch (e) {
+      logout(e.message);
+    } catch (e) {
+      logout('Error no controlado');
+    }
   }
 
   Future<void> checkAuthStatus() async {
