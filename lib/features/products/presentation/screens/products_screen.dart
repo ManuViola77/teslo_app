@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:teslo_shop/features/products/products.dart';
 import 'package:teslo_shop/features/shared/shared.dart';
 
-import '../../infrastructure/providers/providers.dart';
+import '../providers/providers.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
