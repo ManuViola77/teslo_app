@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:formz/formz.dart';
+import 'package:teslo_shop/config/constants/environment.dart';
 
 import 'package:teslo_shop/features/products/domain/domain.dart';
 
@@ -18,11 +19,51 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> {
           sizes: product.sizes,
           gender: product.gender,
           description: product.description,
-          tags: product.tags.join(', '),
+          tags: product.tags.join(','),
           images: product.images,
         ));
 
-  void onTitleChange(String value) {
+  Future<bool> onFormSubmit() async {
+    _touchEverything();
+    if (!state.isFormValid) return false;
+
+    if (onSubmitCallback == null) return false;
+
+    final productLike = {
+      'id': state.id,
+      'title': state.title.value,
+      'slug': state.slug.value,
+      'price': state.price.value,
+      'inStock': state.inStock.value,
+      'sizes': state.sizes,
+      'gender': state.gender,
+      'description': state.description,
+      'tags': state.tags.split(','),
+      'images': state.images
+          .map((image) =>
+              image.replaceAll('${Environment.apiUrl}files/product/', ''))
+          .toList(),
+    };
+
+    print(productLike);
+
+    // TODO: onSubmitCallback!(productLike);
+
+    return true;
+  }
+
+  void _touchEverything() {
+    state = state.copyWith(
+      isFormValid: Formz.validate([
+        Title.dirty(state.title.value),
+        Slug.dirty(state.slug.value),
+        Price.dirty(state.price.value),
+        Stock.dirty(state.inStock.value)
+      ]),
+    );
+  }
+
+  void onTitleChanged(String value) {
     final Title title = Title.dirty(value);
     state = state.copyWith(
       title: title,
@@ -31,7 +72,7 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> {
     );
   }
 
-  void onSlugChange(String value) {
+  void onSlugChanged(String value) {
     final Slug slug = Slug.dirty(value);
     state = state.copyWith(
       slug: slug,
@@ -40,7 +81,7 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> {
     );
   }
 
-  void onPriceChange(double value) {
+  void onPriceChanged(double value) {
     final Price price = Price.dirty(value);
     state = state.copyWith(
       price: price,
@@ -49,7 +90,7 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> {
     );
   }
 
-  void onStockChange(int value) {
+  void onStockChanged(int value) {
     final Stock inStock = Stock.dirty(value);
     state = state.copyWith(
       inStock: inStock,
@@ -59,6 +100,30 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> {
         state.slug,
         state.price,
       ]),
+    );
+  }
+
+  void onSizesChanged(List<String> sizes) {
+    state = state.copyWith(
+      sizes: sizes,
+    );
+  }
+
+  void onGenderChanged(String gender) {
+    state = state.copyWith(
+      gender: gender,
+    );
+  }
+
+  void onDescriptionChanged(String description) {
+    state = state.copyWith(
+      description: description,
+    );
+  }
+
+  void onTagsChanged(String tags) {
+    state = state.copyWith(
+      tags: tags,
     );
   }
 }
