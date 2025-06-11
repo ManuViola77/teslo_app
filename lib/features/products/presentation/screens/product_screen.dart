@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:teslo_shop/features/products/products.dart';
 
 import '../providers/providers.dart';
 
@@ -21,7 +22,7 @@ class ProductScreen extends ConsumerWidget {
         ],
       ),
       body: productState.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const FullScreenLoader()
           : Center(
               child: Text(productState.product?.title ?? 'No hay producto')),
       floatingActionButton: FloatingActionButton(
