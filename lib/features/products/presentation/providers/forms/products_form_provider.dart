@@ -1,4 +1,67 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:formz/formz.dart';
+
+import 'package:teslo_shop/features/products/domain/domain.dart';
+
 import '../../../../shared/shared.dart';
+
+class ProductFormNotifier extends StateNotifier<ProductFormState> {
+  final void Function(Map<String, dynamic> productLike)? onSubmitCallback;
+
+  ProductFormNotifier({this.onSubmitCallback, required Product product})
+      : super(ProductFormState(
+          id: product.id,
+          title: Title.dirty(product.title),
+          slug: Slug.dirty(product.slug),
+          price: Price.dirty(product.price),
+          inStock: Stock.dirty(product.stock),
+          sizes: product.sizes,
+          gender: product.gender,
+          description: product.description,
+          tags: product.tags.join(', '),
+          images: product.images,
+        ));
+
+  void onTitleChange(String value) {
+    final Title title = Title.dirty(value);
+    state = state.copyWith(
+      title: title,
+      isFormValid:
+          Formz.validate([title, state.slug, state.price, state.inStock]),
+    );
+  }
+
+  void onSlugChange(String value) {
+    final Slug slug = Slug.dirty(value);
+    state = state.copyWith(
+      slug: slug,
+      isFormValid:
+          Formz.validate([slug, state.title, state.price, state.inStock]),
+    );
+  }
+
+  void onPriceChange(double value) {
+    final Price price = Price.dirty(value);
+    state = state.copyWith(
+      price: price,
+      isFormValid:
+          Formz.validate([price, state.title, state.slug, state.inStock]),
+    );
+  }
+
+  void onStockChange(int value) {
+    final Stock inStock = Stock.dirty(value);
+    state = state.copyWith(
+      inStock: inStock,
+      isFormValid: Formz.validate([
+        inStock,
+        state.title,
+        state.slug,
+        state.price,
+      ]),
+    );
+  }
+}
 
 class ProductFormState {
   final bool isFormValid;
