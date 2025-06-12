@@ -86,7 +86,12 @@ class ProductScreen extends ConsumerWidget {
                 .onFormSubmit()
                 .then((value) {
               if (!value || !context.mounted) return;
-              showCenterOverlay(context, 'Producto actualizado correctamente');
+
+              showCenterOverlay(
+                  context,
+                  (productState.product!.id == 'new')
+                      ? 'Producto creado correctamente'
+                      : 'Producto actualizado correctamente');
               context.pop();
             });
           },

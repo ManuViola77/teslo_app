@@ -58,7 +58,8 @@ class ProductsDatasourceImpl extends ProductsDatasource {
       final String? productId = productLike['id'];
       final String method = (productId == null) ? 'POST' : 'PATCH';
       productLike.remove('id');
-      final String url = (productId == null) ? 'post' : 'products/$productId';
+      final String url =
+          (productId == null) ? 'products' : 'products/$productId';
 
       final response = await dio.request<Map<String, dynamic>>(url,
           data: productLike, options: Options(method: method));
