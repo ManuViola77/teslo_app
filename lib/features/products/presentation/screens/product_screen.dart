@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:teslo_shop/features/shared/shared.dart';
 
@@ -10,6 +11,56 @@ class ProductScreen extends ConsumerWidget {
   final String productId;
 
   const ProductScreen({super.key, required this.productId});
+
+  void showCenterOverlay(BuildContext context, String message) {
+    final overlay = Overlay.of(context);
+
+    final overlayEntry = OverlayEntry(
+      builder: (context) => Center(
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            width: 300,
+            height: 175,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 60,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  message,
+                  style: const TextStyle(fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+
+    Future.delayed(const Duration(seconds: 2), () {
+      overlayEntry.remove();
+    });
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,7 +83,12 @@ class ProductScreen extends ConsumerWidget {
 
             ref
                 .read(productFormProvider(productState.product!).notifier)
-                .onFormSubmit();
+                .onFormSubmit()
+                .then((value) {
+              if (!value || !context.mounted) return;
+              showCenterOverlay(context, 'Producto actualizado correctamente');
+              context.pop();
+            });
           },
           child: const Icon(Icons.save_as_outlined)),
     );
